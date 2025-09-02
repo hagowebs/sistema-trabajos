@@ -1,59 +1,132 @@
 $(document).ready(function() {
+
+    // Configurar moment.js en español
+
+    moment.locale('es');
+    
+    // Inicializar Date Range Picker
+
+    $('#daterange').daterangepicker({
+        autoUpdateInput: false,
+        locale: {
+            cancelLabel: 'Limpiar',
+            applyLabel: 'Aplicar',
+            fromLabel: 'Desde',
+            toLabel: 'Hasta',
+            customRangeLabel: 'Rango Personalizado',
+            daysOfWeek: ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'],
+            monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+                        'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+            firstDay: 1,
+            format: 'DD/MM/YYYY'
+        },
+        ranges: {
+            'Hoy': [moment(), moment()],
+            'Ayer': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+            'Últimos 7 días': [moment().subtract(6, 'days'), moment()],
+            'Últimos 30 días': [moment().subtract(29, 'days'), moment()],
+            'Este mes': [moment().startOf('month'), moment().endOf('month')],
+            'Mes anterior': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+        }
+    });
+    
+    // Eventos del Date Range Picker
+
+    $('#daterange').on('apply.daterangepicker', function(ev, picker) {
+        $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+        tabla.ajax.reload();
+    });
+    
+    $('#daterange').on('cancel.daterangepicker', function(ev, picker) {
+        $(this).val('');
+    });
+    
     // Inicializar DataTable
-    var tabla = $('#tablaTrabajo').DataTable({
+
+    var tabla = $('#tablaPlacas').DataTable({
+        "processing": true,
+        "serverSide": false,
+        "pageLength": 25,
+        "order": [[0, "desc"]],
         "ajax": {
-            "url": "app/ajax/pruebas/listar_trabajos.php",
-            "type": "POST"
+            "url": "app/ajax/placas/listar.php",
+            "type": "POST",
+            "data": function(d) {
+
+                // Agregar parámetros adicionales de filtro
+
+                d.fecha_inicio = '';
+                d.fecha_fin = '';
+                d.estado = $('#estado_filter').val();
+                
+                // Procesar el rango de fechas
+                
+                if ($('#daterange').val() !== '') {
+                    var fechas = $('#daterange').val().split(' - ');
+                    if (fechas.length === 2) {
+                        d.fecha_inicio = moment(fechas[0], 'DD/MM/YYYY').format('YYYY-MM-DD');
+                        d.fecha_fin = moment(fechas[1], 'DD/MM/YYYY').format('YYYY-MM-DD');
+                    }
+                }
+            }
         },
         "columns": [
-            {"data": "id"},
-            {"data": "titulo"},
-            {"data": "empresa"},
-            {"data": "ubicacion"},
-            {"data": "tipo_empleo"},
-            {
-                "data": "estado",
-                "render": function(data) {
-                    return data === 'Activo' ? 
-                        '<span class="badge badge-success">Activo</span>' : 
-                        '<span class="badge badge-danger">Inactivo</span>';
+            { "data": "id" },
+            { "data": "placa" },
+            { "data": "diseno" },
+            { "data": "cantidad" },
+            { "data": "tamano" },
+            { "data": "estado" },
+            { 
+                "data": "fecha",
+                "render": function(data, type, row) {
+                    if (type === 'display' || type === 'type') {
+                        return moment(data).format('DD/MM/YYYY');
+                    }
+                    return data;
                 }
             },
             {
-                "data": "fecha_publicacion",
-                "render": function(data) {
-                    return new Date(data).toLocaleDateString('es-MX');
-                }
-            },
-            {
-                "data": null,
+                "data": "id",
                 "render": function(data, type, row) {
                     return `
-                        <button class="btn btn-sm btn-info" onclick="editarTrabajo(${row.id})">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="btn btn-sm btn-danger" onclick="eliminarTrabajo(${row.id})">
-                            <i class="fas fa-trash"></i>
-                        </button>
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-sm btn-warning" onclick="editarPlaca(${data})" title="Editar">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-danger" onclick="eliminarPlaca(${data})" title="Eliminar">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
                     `;
                 }
             }
         ],
         "language": {
-            "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-MX.json"
-        },
-        "responsive": true,
-        "lengthChange": false,
-        "autoWidth": false
+            "url": "//cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json"
+        }
     });
+    
+    // Limpiar parámetros de filtros
 
-    // Manejar envío del formulario
-    $('#formTrabajo').on('submit', function(e) {
+    $('#btn_limpiar').click(function() {
+        $('#daterange').val('');
+        $('#estado_filter').val('');
+        tabla.ajax.reload();
+    });
+    
+    // Filtrar automáticamente al cambiar los selects
+
+    $('#estado_filter').change(function() {
+        tabla.ajax.reload();
+    });
+    
+    // Crear y editar registro
+
+    $('#formPlaca').on('submit', function(e) {
         e.preventDefault();
-        
         var formData = $(this).serialize();
-        var url = $('#trabajoId').val() ? 'app/ajax/pruebas/editar_trabajo.php' : 'app/ajax/pruebas/crear_trabajo.php';
-        
+        var url = $('#placaId').val() ? 'app/ajax/placas/editar.php' : 'app/ajax/placas/crear.php';
         $.ajax({
             url: url,
             type: 'POST',
@@ -61,9 +134,8 @@ $(document).ready(function() {
             dataType: 'json',
             success: function(response) {
                 if(response.success) {
-                    $('#modalTrabajo').modal('hide');
-                    tabla.ajax.reload(null, false); // Recargar sin resetear paginación
-                    
+                    $('#modalPlaca').modal('hide');
+                    tabla.ajax.reload(null, false);
                     Swal.fire({
                         icon: 'success',
                         title: '¡Éxito!',
@@ -71,10 +143,9 @@ $(document).ready(function() {
                         timer: 2000,
                         showConfirmButton: false
                     });
-                    
-                    $('#formTrabajo')[0].reset();
-                    $('#trabajoId').val('');
-                    $('#tituloModal').text('Nuevo Trabajo');
+                    $('#formPlaca')[0].reset();
+                    $('#placaId').val('');
+                    $('#tituloModal').text('Nueva Placa');
                 } else {
                     Swal.fire({
                         icon: 'error',
@@ -87,47 +158,50 @@ $(document).ready(function() {
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
-                    text: 'Ocurrió un error al procesar la solicitud'
+                    text: 'Ocurrió un error al procesar'
                 });
             }
         });
     });
 
     // Limpiar formulario al cerrar modal
-    $('#modalTrabajo').on('hidden.bs.modal', function() {
-        $('#formTrabajo')[0].reset();
-        $('#trabajoId').val('');
-        $('#tituloModal').text('Nuevo Trabajo');
+
+    $('#modalPlaca').on('hidden.bs.modal', function() {
+        $('#formPlaca')[0].reset();
+        $('#placaId').val('');
+        $('#tituloModal').text('Nueva Placa');
     });
+
 });
 
-// Función para editar trabajo
-function editarTrabajo(id) {
+// Obtener datos para editar
+
+function editarPlaca(id) {
     $.ajax({
-        url: 'app/ajax/pruebas/obtener_trabajo.php',
+        url: 'app/ajax/placas/obtener.php',
         type: 'POST',
         data: {id: id},
         dataType: 'json',
         success: function(data) {
             if(data.success) {
-                var trabajo = data.data;
-                $('#trabajoId').val(trabajo.id);
-                $('#titulo').val(trabajo.titulo);
-                $('#empresa').val(trabajo.empresa);
-                $('#ubicacion').val(trabajo.ubicacion);
-                $('#tipo_empleo').val(trabajo.tipo_empleo);
-                $('#salario').val(trabajo.salario);
-                $('#estado').val(trabajo.estado);
-                $('#descripcion').val(trabajo.descripcion);
-                $('#tituloModal').text('Editar Trabajo');
-                $('#modalTrabajo').modal('show');
+                var placa = data.data;
+                $('#placaId').val(placa.id);
+                $('#placa').val(placa.placa);
+                $('#diseno').val(placa.diseno);
+                $('#cantidad').val(placa.cantidad);
+                $('#tamano').val(placa.tamano);
+                $('#estado').val(placa.estado);
+                $('#fecha').val(placa.fecha);
+                $('#tituloModal').text('Editar Placa');
+                $('#modalPlaca').modal('show');
             }
         }
     });
 }
 
-// Función para eliminar trabajo
-function eliminarTrabajo(id) {
+// Eliminar registro
+
+function eliminarPlaca(id) {
     Swal.fire({
         title: '¿Estás seguro?',
         text: "Esta acción no se puede deshacer",
@@ -140,13 +214,13 @@ function eliminarTrabajo(id) {
     }).then((result) => {
         if (result.isConfirmed) {
             $.ajax({
-                url: 'app/ajax/pruebas/eliminar_trabajo.php',
+                url: 'app/ajax/placas/eliminar.php',
                 type: 'POST',
                 data: {id: id},
                 dataType: 'json',
                 success: function(response) {
                     if(response.success) {
-                        $('#tablaTrabajo').DataTable().ajax.reload(null, false);
+                        $('#tablaPlacas').DataTable().ajax.reload(null, false);
                         Swal.fire({
                             icon: 'success',
                             title: 'Eliminado',

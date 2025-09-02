@@ -1,127 +1,130 @@
-<!-- Content Wrapper -->
-    <div class="content-wrapper">
-        <div class="content-header">
+    <main class="content-wrapper">
+        <section class="content-header">
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1 class="m-0">Gestión de Trabajos</h1>
+                        <h1 class="m-0">Registro de Placas</h1>
                     </div>
                 </div>
             </div>
-        </div>
-        <!-- Main content -->
+        </section>
         <section class="content">
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-12">
                         <div class="card">
                             <div class="card-header">
-                                <h3 class="card-title">Lista de Trabajos</h3>
+                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalPlaca">
+                                    <i class="fas fa-plus"></i> Nueva Placa
+                                </button>
                                 <div class="card-tools">
-                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalTrabajo">
-                                        <i class="fas fa-plus"></i> Nuevo Trabajo
-                                    </button>
+                                    
                                 </div>
                             </div>
                             <div class="card-body">
-                                <table id="tablaTrabajo" class="table table-bordered table-striped">
+
+                                <!-- Filtros -->
+                                <div class="filter-container">
+                                    <div class="row">
+                                        <div class="col-lg-3 col-md-6">
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">
+                                                        <i class="fas fa-calendar-alt"></i>
+                                                    </span>
+                                                </div>
+                                                <input type="text" class="form-control" id="daterange" name="daterange" placeholder="Seleccionar fechas">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-2 col-md-6">
+                                            <select class="form-control" id="estado_filter">
+                                                <option value="">Todos</option>
+                                                <option value="pendiente">Pendiente</option>
+                                                <option value="terminado">Terminado</option>
+                                                <option value="entregado">Entregado</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-lg-3 col-md-12">
+                                            <button type="button" class="btn btn-secondary" id="btn_limpiar">
+                                                <i class="fas fa-eraser"></i> Limpiar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Tabla -->
+                                <table id="tablaPlacas" class="table table-bordered table-striped">
                                     <thead>
                                         <tr>
                                             <th>ID</th>
-                                            <th>Título</th>
-                                            <th>Empresa</th>
-                                            <th>Ubicación</th>
-                                            <th>Tipo</th>
+                                            <th>Cliente</th>
+                                            <th>Diseño</th>
+                                            <th>Cantidad</th>
+                                            <th>Tamaño</th>
                                             <th>Estado</th>
                                             <th>Fecha</th>
                                             <th>Acciones</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <!-- Los datos se cargarán vía AJAX -->
+                                        <!-- Los datos se cargan vía AJAX -->
                                     </tbody>
                                 </table>
+
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
-    </div>
-    <!-- Modal para agregar/editar trabajo -->
-    <div class="modal fade" id="modalTrabajo" tabindex="-1">
+    </main>
+
+    <!-- Modal para crear / editar -->
+    <div class="modal fade" id="modalPlaca" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
+
                 <div class="modal-header">
-                    <h4 class="modal-title" id="tituloModal">Nuevo Trabajo</h4>
+                    <h4 class="modal-title" id="tituloModal">Nueva Placa</h4>
                     <button type="button" class="close" data-dismiss="modal">
                         <span>&times;</span>
                     </button>
                 </div>
-                <form id="formTrabajo">
+                <form id="formPlaca">
                     <div class="modal-body">
-                        <input type="hidden" id="trabajoId" name="id">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="titulo">Título del Trabajo *</label>
-                                    <input type="text" class="form-control" id="titulo" name="titulo" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="empresa">Empresa *</label>
-                                    <input type="text" class="form-control" id="empresa" name="empresa" required>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="ubicacion">Ubicación *</label>
-                                    <input type="text" class="form-control" id="ubicacion" name="ubicacion" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="tipo_empleo">Tipo de Empleo *</label>
-                                    <select class="form-control" id="tipo_empleo" name="tipo_empleo" required>
-                                        <option value="">Seleccionar...</option>
-                                        <option value="Tiempo Completo">Tiempo Completo</option>
-                                        <option value="Tiempo Parcial">Tiempo Parcial</option>
-                                        <option value="Freelance">Freelance</option>
-                                        <option value="Remoto">Remoto</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="salario">Salario</label>
-                                    <input type="number" class="form-control" id="salario" name="salario" step="0.01">
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="estado">Estado</label>
-                                    <select class="form-control" id="estado" name="estado">
-                                        <option value="Activo">Activo</option>
-                                        <option value="Inactivo">Inactivo</option>
-                                    </select>
-                                </div>
-                            </div>
+                        <input type="hidden" id="placaId" name="id">
+                        <div class="form-group">
+                            <input type="text" class="form-control" id="placa" name="placa" placeholder="Cliente *" required>
                         </div>
                         <div class="form-group">
-                            <label for="descripcion">Descripción *</label>
-                            <textarea class="form-control" id="descripcion" name="descripcion" rows="4" required></textarea>
+                            <input type="text" class="form-control" id="diseno" name="diseno" placeholder="Diseño *" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="number" class="form-control" id="cantidad" name="cantidad" placeholder="Cantidad *" required>
+                        </div>
+                        <div class="form-group">
+                            <select class="form-control" id="tamano" name="tamano" required>
+                                <option value="">Seleccionar Tamaño *</option>
+                                <option value="34x47">34x47</option>
+                                <option value="51x40">51x40</option>
+                                <option value="65x55">65x55</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <select class="form-control" id="estado" name="estado" required>
+                                <option value="">Selecionar Estado</option>
+                                <option value="Pendiente">Pendiente</option>
+                                <option value="Terminado">Terminado</option>
+                                <option value="Entregado">Entregado</option>
+                            </select>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-primary">Guardar</button>
+                        <button type="submit" class="btn btn-primary">Registrar</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
+

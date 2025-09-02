@@ -1,15 +1,17 @@
-<?php // Base de datos
+<?php 
+
+// Conexión a base de datos
 
 $host = 'localhost';
 $dbname = 'sistema';
-$username = 'emilio';
-$password = 'cadava';
+$username = 'root';
+$password = '';
 
-// Conexión
-
+/*
 try {
     $pdo = new PDO("mysql: host=$host; dbname=$dbname; charset=utf8", $username, $password);
     $pdo -> setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch(PDOException $e) {
     die("Error de conexión: " . $e->getMessage());
 }
+*/

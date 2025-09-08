@@ -3,12 +3,8 @@ $(document).ready(function() {
     // Inicializar DataTable
 
     var tabla = $('#tablaUsuarios').DataTable({
-        "processing": true,
-        "serverSide": false,
-        "pageLength": 25,
-        "order": [[0, "desc"]],
         "ajax": {
-            "url": "app/ajax/usuarios/listar.php",
+            "url": "app/modules/usuarios/listar.php",
             "type": "POST"
         },
         "columns": [
@@ -34,7 +30,28 @@ $(document).ready(function() {
         ],
         "language": {
             "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-MX.json"
-        }
+        },
+        "processing": true,
+        "serverSide": false,
+        "pageLength": 25,
+        "order": [[0, "desc"]],
+        "dom": 'Bfrtip', // B = Buttons, f = filter, r = processing, t = table, i = info, p = pagination
+        "buttons": [
+            {
+                "extend": 'excelHtml5',
+                "text": '<i class="fas fa-file-excel"></i> Exportar a Excel',
+                "exportOptions": {
+                    "columns": ':not(:last-child)' // Excluye la última columna
+                }
+            },
+            {
+                "extend": 'print',
+                "text": '<i class="fas fa-print"></i> Imprimir',
+                "exportOptions": {
+                    "columns": ':not(:last-child)' // Excluye la última columna
+                }
+            }
+        ]
     });
 
     // Crear y editar registro
@@ -42,7 +59,7 @@ $(document).ready(function() {
     $('#formUsuario').on('submit', function(e) {
         e.preventDefault();
         var formData = $(this).serialize();
-        var url = $('#usuarioId').val() ? 'app/ajax/usuarios/editar.php' : 'app/ajax/usuarios/crear.php';
+        var url = $('#usuarioId').val() ? 'app/modules/usuarios/editar.php' : 'app/modules/usuarios/crear.php';
         $.ajax({
             url: url,
             type: 'POST',
@@ -94,7 +111,7 @@ $(document).ready(function() {
 
 function editarUsuario(id) {
     $.ajax({
-        url: 'app/ajax/usuarios/obtener.php',
+        url: 'app/modules/usuarios/obtener.php',
         type: 'POST',
         data: {id: id},
         dataType: 'json',
@@ -128,7 +145,7 @@ function eliminarUsuario(id) {
     }).then((result) => {
         if (result.isConfirmed) {
             $.ajax({
-                url: 'app/ajax/usuarios/eliminar.php',
+                url: 'app/modules/usuarios/eliminar.php',
                 type: 'POST',
                 data: {id: id},
                 dataType: 'json',

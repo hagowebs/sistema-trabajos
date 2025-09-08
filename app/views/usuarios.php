@@ -14,16 +14,20 @@
                     <div class="col-12">
                         <div class="card">
                             <div class="card-header">
-                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalUsuario">
-                                    <i class="fas fa-plus"></i> Nuevo Usuario
-                                </button>
+
+                                <!-- Botones -->
+
                                 <div class="card-tools">
-                                    
+                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalUsuario">
+                                        <i class="fas fa-plus"></i> Nuevo Usuario
+                                    </button>
                                 </div>
+                                
                             </div>
                             <div class="card-body">
 
                                 <!-- Tabla -->
+
                                 <table id="tablaUsuarios" class="table table-bordered table-striped">
                                     <thead>
                                         <tr>
@@ -50,6 +54,7 @@
     </main>
 
     <!-- Modal para crear / editar -->
+     
     <div class="modal fade" id="modalUsuario" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -64,17 +69,21 @@
                     <div class="modal-body">
                         <input type="hidden" id="usuarioId" name="id">
                         <div class="form-group">
-                            <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Nombre *" required>
+                            <label for="nombre">Nombre *</label>
+                            <input type="text" class="form-control" id="nombre" name="nombre" required>
                         </div>
                         <div class="form-group">
-                            <input type="text" class="form-control" id="usuario" name="usuario" placeholder="Usuario *" required>
+                            <label for="usuario">Usuario *</label>
+                            <input type="text" class="form-control" id="usuario" name="usuario" required>
                         </div>
                         <div class="form-group">
-                            <input type="password" class="form-control" id="clave" name="clave" placeholder="Clave *" required>
+                            <label for="clave">Clave *</label>
+                            <input type="password" class="form-control" id="clave" name="clave" required>
                         </div>
                         <div class="form-group">
+                            <label for="perfil">Perfil *</label>
                             <select class="form-control" id="perfil" name="perfil" required>
-                                <option value="">Seleccionar Perfil *</option>
+                                <option value="">Seleccionar</option>
                                 <option value="Administrador">Administrador</option>
                                 <option value="Especial">Especial</option>
                                 <option value="Vendedor">Vendedor</option>
@@ -83,7 +92,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-primary">Registrar</button>
+                        <button type="submit" id="btnEnviar" class="btn btn-primary">Registrar</button>
                     </div>
                 </form>
             </div>

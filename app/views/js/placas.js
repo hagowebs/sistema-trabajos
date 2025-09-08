@@ -1,9 +1,5 @@
 $(document).ready(function() {
 
-    // Configurar moment.js en español
-
-    moment.locale('es');
-    
     // Inicializar Date Range Picker
 
     $('#daterange').daterangepicker({
@@ -39,19 +35,24 @@ $(document).ready(function() {
     
     $('#daterange').on('cancel.daterangepicker', function(ev, picker) {
         $(this).val('');
+        tabla.ajax.reload();
     });
     
     // Inicializar DataTable
 
-    var tabla = $('#tablaPlacas').DataTable({
-        "processing": true,
-        "serverSide": false,
-        "pageLength": 25,
-        "order": [[0, "desc"]],
+    var tabla = $('#tablaPlaca').DataTable({
         "ajax": {
-            "url": "app/ajax/placas/listar.php",
+            "url": "app/modules/placas/listar.php",
             "type": "POST",
             "data": function(d) {
+
+                // Revisar si hay algun filtro activo
+
+                var isAnyFilterActive = $('#daterange').val() !== '' || $('#estado_filter').val() !== '';
+                
+                // Agregar el parámetro que oculta los 'Entregados' por defecto si no hay filtros activos
+
+                d.ocultar_entregados = !isAnyFilterActive;
 
                 // Agregar parámetros adicionales de filtro
 
@@ -60,7 +61,7 @@ $(document).ready(function() {
                 d.estado = $('#estado_filter').val();
                 
                 // Procesar el rango de fechas
-                
+
                 if ($('#daterange').val() !== '') {
                     var fechas = $('#daterange').val().split(' - ');
                     if (fechas.length === 2) {
@@ -88,6 +89,7 @@ $(document).ready(function() {
             },
             {
                 "data": "id",
+                "orderable": false,
                 "render": function(data, type, row) {
                     return `
                         <div class="btn-group" role="group">
@@ -104,10 +106,37 @@ $(document).ready(function() {
         ],
         "language": {
             "url": "//cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json"
-        }
+        },
+        "processing": true,
+        "serverSide": false,
+        "pageLength": 25,
+        "order": [[0, "desc"]],
+        "dom": 'Bfrtip', // B = Buttons, f = filter, r = processing, t = table, i = info, p = pagination
+        "buttons": [
+            {
+                "extend": 'excelHtml5',
+                "text": '<i class="fas fa-file-excel"></i> Exportar a Excel',
+                "exportOptions": {
+                    "columns": ':not(:last-child)' // Excluye la última columna
+                }
+            },
+            {
+                "extend": 'print',
+                "text": '<i class="fas fa-print"></i> Imprimir',
+                "exportOptions": {
+                    "columns": ':not(:last-child)' // Excluye la última columna
+                }
+            }
+        ]
+    });
+
+    // Focus el input de búsqueda
+    
+    tabla.on('init.dt', function () {
+        $('#tablaPlaca_filter input').focus();
     });
     
-    // Limpiar parámetros de filtros
+    // Limpiar filtros
 
     $('#btn_limpiar').click(function() {
         $('#daterange').val('');
@@ -115,7 +144,7 @@ $(document).ready(function() {
         tabla.ajax.reload();
     });
     
-    // Filtrar automáticamente al cambiar los selects
+    // Filtrar automáticamente cuando cambien los selects
 
     $('#estado_filter').change(function() {
         tabla.ajax.reload();
@@ -126,7 +155,7 @@ $(document).ready(function() {
     $('#formPlaca').on('submit', function(e) {
         e.preventDefault();
         var formData = $(this).serialize();
-        var url = $('#placaId').val() ? 'app/ajax/placas/editar.php' : 'app/ajax/placas/crear.php';
+        var url = $('#placaId').val() ? 'app/modules/placas/editar.php' : 'app/modules/placas/crear.php';
         $.ajax({
             url: url,
             type: 'POST',
@@ -171,14 +200,13 @@ $(document).ready(function() {
         $('#placaId').val('');
         $('#tituloModal').text('Nueva Placa');
     });
-
 });
 
 // Obtener datos para editar
 
 function editarPlaca(id) {
     $.ajax({
-        url: 'app/ajax/placas/obtener.php',
+        url: 'app/modules/placas/obtener.php',
         type: 'POST',
         data: {id: id},
         dataType: 'json',
@@ -214,13 +242,13 @@ function eliminarPlaca(id) {
     }).then((result) => {
         if (result.isConfirmed) {
             $.ajax({
-                url: 'app/ajax/placas/eliminar.php',
+                url: 'app/modules/placas/eliminar.php',
                 type: 'POST',
                 data: {id: id},
                 dataType: 'json',
                 success: function(response) {
                     if(response.success) {
-                        $('#tablaPlacas').DataTable().ajax.reload(null, false);
+                        $('#tablaPlaca').DataTable().ajax.reload(null, false);
                         Swal.fire({
                             icon: 'success',
                             title: 'Eliminado',

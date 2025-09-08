@@ -3,12 +3,8 @@ $(document).ready(function() {
     // Inicializar DataTable
 
     var tabla = $('#tablaClientes').DataTable({
-        "processing": true,
-        "serverSide": false,
-        "pageLength": 25,
-        "order": [[0, "desc"]],
         "ajax": {
-            "url": "app/ajax/clientes/listar.php",
+            "url": "app/modules/clientes/listar.php",
             "type": "POST"
         },
         "columns": [
@@ -34,7 +30,28 @@ $(document).ready(function() {
         ],
         "language": {
             "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-MX.json"
-        }
+        },
+        "processing": true,
+        "serverSide": false,
+        "pageLength": 25,
+        "order": [[0, "desc"]],
+        "dom": 'Bfrtip', // B = Buttons, f = filter, r = processing, t = table, i = info, p = pagination
+        "buttons": [
+            {
+                "extend": 'excelHtml5',
+                "text": '<i class="fas fa-file-excel"></i> Exportar a Excel',
+                "exportOptions": {
+                    "columns": ':not(:last-child)' // Excluye la última columna
+                }
+            },
+            {
+                "extend": 'print',
+                "text": '<i class="fas fa-print"></i> Imprimir',
+                "exportOptions": {
+                    "columns": ':not(:last-child)' // Excluye la última columna
+                }
+            }
+        ]
     });
 
     // Crear y editar registro
@@ -42,7 +59,7 @@ $(document).ready(function() {
     $('#formCliente').on('submit', function(e) {
         e.preventDefault();
         var formData = $(this).serialize();
-        var url = $('#clienteId').val() ? 'app/ajax/clientes/editar.php' : 'app/ajax/clientes/crear.php';
+        var url = $('#clienteId').val() ? 'app/modules/clientes/editar.php' : 'app/modules/clientes/crear.php';
         $.ajax({
             url: url,
             type: 'POST',
@@ -94,7 +111,7 @@ $(document).ready(function() {
 
 function editarCliente(id) {
     $.ajax({
-        url: 'app/ajax/clientes/obtener.php',
+        url: 'app/modules/clientes/obtener.php',
         type: 'POST',
         data: {id: id},
         dataType: 'json',
@@ -129,7 +146,7 @@ function eliminarCliente(id) {
     }).then((result) => {
         if (result.isConfirmed) {
             $.ajax({
-                url: 'app/ajax/clientes/eliminar.php',
+                url: 'app/modules/clientes/eliminar.php',
                 type: 'POST',
                 data: {id: id},
                 dataType: 'json',

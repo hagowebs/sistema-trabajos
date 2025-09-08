@@ -5,81 +5,83 @@ function info($value) {
         case 'name': echo 'Trabajos PIP'; break;
         case 'url': return 'https://localhost/sistema'; break;
         case 'version': echo '2025-09-10 3.0'; break;
-        case 'version': echo '
-        2025-09-10 3.0 Actualizar de AdminLte2 a AdminLte3 e incluir Ajax en DataTables eficientando las consutas
-        '; break;
+        case 'updates': echo '2025-09-10 3.0 Actualizar de AdminLte2 a AdminLte3'; break;
     }
 }
 
 // Rutas validas
 
-$nivelUsuario = $_SESSION['nivel'] ?? 3;
-$ruta_actual = $_GET['ruta'] ?? 'pruebas';
+$ruta_actual = $_GET['ruta'] ?? 'trabajos';
 $rutas_validas = [
-    'usuarios' => ['nombre' => 'Usuarios', 'icono' => 'fas fa-users', 'visible' => true, 'acceso' => 3],
-    'clientes' => ['nombre' => 'Clientes', 'icono' => 'fas fa-user-tie', 'visible' => true, 'acceso' => 2],
-    'trabajos' => ['nombre' => 'Trabajos', 'icono' => 'fas fa-briefcase', 'visible' => true, 'acceso' => 2],
-    'cxc' => ['nombre' => 'CXC', 'icono' => 'fas fa-file-invoice-dollar', 'visible' => true, 'acceso' => 2],
-    'dtfs' => ['nombre' => 'DTFs', 'icono' => 'fas fa-print', 'visible' => true, 'acceso' => 2],
-    'dtfuvs' => ['nombre' => 'DTFUVs', 'icono' => 'fas fa-layer-group', 'visible' => true, 'acceso' => 2],
-    'lonas' => ['nombre' => 'Lonas', 'icono' => 'fas fa-image', 'visible' => true, 'acceso' => 2],
-    'vinilos' => ['nombre' => 'Vinilos', 'icono' => 'fas fa-palette', 'visible' => true, 'acceso' => 2],
-    'placas' => ['nombre' => 'Placas', 'icono' => 'fas fa-square', 'visible' => true, 'acceso' => 2],
-    'productos' => ['nombre' => 'Productos', 'icono' => 'fas fa-box', 'visible' => true, 'acceso' => 2],
-    'requisics' => ['nombre' => 'Requisiciones', 'icono' => 'fas fa-clipboard-list', 'visible' => true, 'acceso' => 2],
-    'ayuda' => ['nombre' => 'Ayuda', 'icono' => 'fas fa-question-circle', 'visible' => false, 'acceso' => 1]
+    'usuarios' => ['nombre' => 'Usuarios', 'icono' => 'fas fa-users'],
+    'clientes' => ['nombre' => 'Clientes', 'icono' => 'fas fa-user-tie'],
+    'trabajos' => ['nombre' => 'Trabajos', 'icono' => 'fas fa-briefcase'],
+    'cxc' => ['nombre' => 'CXC', 'icono' => 'fas fa-file-invoice-dollar'],
+    'dtfs' => ['nombre' => 'DTFs', 'icono' => 'fas fa-print'],
+    'dtfuvs' => ['nombre' => 'DTFUVs', 'icono' => 'fas fa-layer-group'],
+    'lonas' => ['nombre' => 'Lonas', 'icono' => 'fas fa-image'],
+    'vinilos' => ['nombre' => 'Vinilos', 'icono' => 'fas fa-palette'],
+    'placas' => ['nombre' => 'Placas', 'icono' => 'fas fa-square'],
+    'productos' => ['nombre' => 'Productos', 'icono' => 'fas fa-box'],
+    'requisics' => ['nombre' => 'Requisiciones', 'icono' => 'fas fa-clipboard-list'],
+    'ayuda' => ['nombre' => 'Ayuda', 'icono' => 'fas fa-question-circle']
 ];
 
 // Partes de plantilla
 
-function get_header() {
-    require_once 'public/header.php';
-}
 function get_sidebar() {
-    global $ruta_actual, $rutas_validas, $nivelUsuario;
+    global $ruta_actual, $rutas_validas;
     echo '<ul class="nav nav-pills nav-sidebar flex-column">';
     foreach ($rutas_validas as $ruta => $datos) {
-        if ($datos['visible'] && $nivelUsuario >= $datos['acceso']) {
-            $active = ($ruta === $ruta_actual) ? 'active' : '';
-                echo '
+        if ($_SESSION["perfil"] !== "Administrador" || $_SESSION["usuario"] !== "emilio") {
+            if (in_array($ruta, ['usuarios', 'cxc', 'requisics'])) {
+                continue;
+            }
+        }
+
+        $active = ($ruta === $ruta_actual) ? 'active' : '';
+        echo '
                     <li class="nav-item">
                         <a href="'.$ruta.'" class="nav-link '.$active.'">
                             <i class="nav-icon '.$datos['icono'].'"></i>
                             <p>'.$datos['nombre'].'</p>
                         </a>
                     </li>';
-        }
     }
             echo '
                 </ul>
             ';
 }
 function get_view() {
-    global $ruta_actual, $rutas_validas, $nivelUsuario;
+    global $ruta_actual, $rutas_validas;
     if (array_key_exists($ruta_actual, $rutas_validas)) {
-        include 'app/views/'.$ruta_actual.'.php';
-    } elseif ($ruta_actual === 'logout') {
-        include 'public/logout.php';
+        require_once '../public/header.php';
+        require_once '../app/views/'.$ruta_actual.'.php';
+        require_once '../public/footer.php';
+    } elseif ($ruta_actual == 'logout') {
+        require_once 'logout.php';
     } else {
-        include 'public/404.php';
+        require_once '../public/header.php';
+        require_once '../public/404.php';
+        require_once '../public/footer.php';
     }
 }
-function get_footer() {
-    require_once 'public/footer.php';
+function get_login() {
+    require_once '../public/login.php';
 }
 
 // Estilos y Scripts
 
 function get_styles() {
-    echo '<link rel="stylesheet" href="'.info("url").'/public/assets/css/custom.css">';
+    echo '<link rel="stylesheet" href="'.info("url").'/public/assets/css/custom.css">
+    ';
 }
 function get_scripts() {
     echo '<script src="'.info("url").'/public/assets/js/custom.js"></script>
 ';
     global $ruta_actual, $rutas_validas;
     if (array_key_exists($ruta_actual, $rutas_validas)) {
-    echo '<script src="'.info("url").'/app/views/js/'.$ruta_actual.'.js"></script>
-';
+    echo '<script src="'.info("url").'/app/views/js/'.$ruta_actual.'.js"></script>';
     }
 }
 

@@ -14,16 +14,20 @@
                     <div class="col-12">
                         <div class="card">
                             <div class="card-header">
-                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalCliente">
-                                    <i class="fas fa-plus"></i> Nuevo Cliente
-                                </button>
+
+                                <!-- Botones -->
+
                                 <div class="card-tools">
-                                    
+                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalCliente">
+                                        <i class="fas fa-plus"></i> Nuevo Cliente
+                                    </button>
                                 </div>
+
                             </div>
                             <div class="card-body">
 
                                 <!-- Tabla -->
+
                                 <table id="tablaClientes" class="table table-bordered table-striped">
                                     <thead>
                                         <tr>
@@ -50,6 +54,7 @@
     </main>
 
     <!-- Modal para crear / editar -->
+     
     <div class="modal fade" id="modalCliente" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -64,24 +69,29 @@
                     <div class="modal-body">
                         <input type="hidden" id="clienteId" name="id">
                         <div class="form-group">
-                            <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Nombre *" required>
+                            <label for="nombre">Cliente *</label>
+                            <input type="text" class="form-control" id="nombre" name="nombre" required>
                         </div>
                         <div class="form-group">
-                            <input type="text" class="form-control" id="documento" name="documento" placeholder="Empresa">
+                            <label for="documento">Empresa</label>
+                            <input type="text" class="form-control" id="documento" name="documento">
                         </div>
                         <div class="form-group">
-                            <input type="email" class="form-control" id="email" name="email" placeholder="Email">
+                            <label for="email">Email</label>
+                            <input type="email" class="form-control" id="email" name="email">
                         </div>
                         <div class="form-group">
-                            <input type="text" class="form-control" id="telefono" name="telefono" placeholder="Teléfono *" required>
+                            <label for="telefono">Teléfono *</label>
+                            <input type="text" class="form-control" id="telefono" name="telefono" maxlength="14" required>
                         </div>
                         <div class="form-group">
-                            <input type="text" class="form-control" id="direccion" name="direccion" placeholder="Direccion">
+                            <label for="direccion">Dirección</label>
+                            <input type="text" class="form-control" id="direccion" name="direccion">
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-primary">Registrar</button>
+                        <button type="submit" id="btnEnviar" class="btn btn-primary">Registrar</button>
                     </div>
                 </form>
             </div>

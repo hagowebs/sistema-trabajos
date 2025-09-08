@@ -1,3 +1,11 @@
 .filter-container {
-    margin-bottom: 15px;
+    margin-bottom: -38px;
+}
+.card-tools .btn {
+  position: relative;
+  margin-right: 10px;
+}
+table a {
+    text-decoration-line: underline;
+    font-weight: bold;
 }

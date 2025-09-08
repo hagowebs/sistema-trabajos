@@ -17,51 +17,49 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css">
     <!-- sweetalert2 11.22.5 CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <!-- Select2 4.1.0 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <!-- Custom CSS -->
     <?php get_styles(); ?>
-
 </head>
 <body class="hold-transition sidebar-mini">
 <div class="wrapper">
 
     <!-- Navbar -->
+
     <nav class="main-header navbar navbar-expand navbar-white navbar-light">
-    <!-- Menu izquierdo -->
-    <ul class="navbar-nav">
-        <li class="nav-item">
-            <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
-        </li>
-        <li class="nav-item d-none d-sm-inline-block">
-            <a href="ayuda" class="nav-link"><i class="fas fa-question-circle"></i> Ayuda</a>
-        </li>
-    </ul>
-    <!-- Menu derecho -->
-    <ul class="navbar-nav ml-auto">
-        <!-- Notificaciones -->
-        <li class="nav-item dropdown">
-        <a class="nav-link" data-toggle="dropdown" href="#">
-            <i class="far fa-bell"></i>
-            <span class="badge badge-warning navbar-badge">15</span>
-        </a>
-        </li>
-        <!-- Menu Usuario -->
-        <li class="nav-item dropdown">
-            <a class="nav-link" data-toggle="dropdown" href="#">
-                <i class="far fa-user"></i> Usuario
-            </a>
-            <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-                <a class="dropdown-item" href="logout">Salir</a>
-            </div>
-        </li>
-    </ul>
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+            </li>
+            <li class="nav-item d-none d-sm-inline-block">
+                <a href="ayuda" class="nav-link"><i class="fas fa-question-circle"></i> Ayuda</a>
+            </li>
+        </ul>
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item dropdown">
+                <a class="nav-link" data-toggle="dropdown" href="#">
+                    <i class="far fa-bell"></i>
+                    <span class="badge badge-warning navbar-badge">15</span>
+                </a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link" data-toggle="dropdown" href="#">
+                    <i class="far fa-user"></i> <?php echo $_SESSION["nombre"]; ?>
+                </a>
+                <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                    <a class="dropdown-item" href="logout">Salir</a>
+                </div>
+            </li>
+        </ul>
     </nav>
+
+    <!-- Sidebar -->
 
     <aside class="main-sidebar sidebar-dark-primary elevation-4">
         <a href="<?php echo info('url'); ?>" class="brand-link">
             <img src="<?php echo info('url'); ?>/public/assets/images/icono-blanco.webp" style="height:50px; padding:5px;">
-            <span class="brand-text font-weight-light">
-                <?php info('name'); ?>
-            </span>
+            <span class="brand-text font-weight-light"><?php info('name'); ?></span>
         </a>
         <div class="sidebar">
             <nav class="mt-2">              

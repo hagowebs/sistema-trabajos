@@ -1,7 +1,9 @@
 $(document).ready(function() {
+
+    // Obtiene día para resaltar trabajo
+    const hoy = new Date().toISOString().split('T')[0];
     
     // Inicializar Date Range Picker
-
     $('#daterange').daterangepicker({
         autoUpdateInput: false,
         locale: {
@@ -27,41 +29,35 @@ $(document).ready(function() {
     });
     
     // Eventos del Date Range Picker
-
     $('#daterange').on('apply.daterangepicker', function(ev, picker) {
         $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
         tabla.ajax.reload();
     });
-    
     $('#daterange').on('cancel.daterangepicker', function(ev, picker) {
         $(this).val('');
         tabla.ajax.reload();
     });
     
     // Inicializar DataTable
-
     var tabla = $('#tablaTrabajo').DataTable({
         "ajax": {
-            "url": "app/modules/trabajos/listar.php",
+            "url": "app/api/trabajos/listar.php",
             "type": "POST",
             "data": function(d) {
 
                 // Revisar si hay algun filtro activo
-
-                var isAnyFilterActive = $('#daterange').val() !== '' || $('#estado_filter').val() !== '';
+                var isAnyFilterActive = $('#daterange').val() !== '' || $('#estado_filter').val() !== '' || $('#encargado_filter').val() !== '';
                 
                 // Agregar el parámetro que oculta los 'Entregados' por defecto si no hay filtros activos
-
                 d.ocultar_entregados = !isAnyFilterActive;
 
                 // Agregar parámetros adicionales de filtro
-
                 d.fecha_inicio = '';
                 d.fecha_fin = '';
                 d.estado = $('#estado_filter').val();
+                d.encargado = $('#encargado_filter').val();
                 
                 // Procesar el rango de fechas
-
                 if ($('#daterange').val() !== '') {
                     var fechas = $('#daterange').val().split(' - ');
                     if (fechas.length === 2) {
@@ -73,7 +69,9 @@ $(document).ready(function() {
         },
         "columns": [
             { "data": "id" },
-            { "data": "id_cliente" },
+            { "data": "encargado" },
+            { "data": "cliente" },
+            { "data": "telefono" },
             { "data": "trabajo" },
             { "data": "fecha_inicial" },
             { "data": "fecha_final" },
@@ -87,14 +85,22 @@ $(document).ready(function() {
                             <button type="button" class="btn btn-sm btn-warning" onclick="editarTrabajo(${data})" title="Editar">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <button type="button" class="btn btn-sm btn-danger" onclick="eliminarTrabajo(${data})" title="Eliminar">
-                                <i class="fas fa-trash"></i>
+                            <button type="button" class="btn btn-sm btn-primary" onclick="imprimirTrabajo(${data})" title="Imprimir">
+                                <i class="fas fa-print"></i>
                             </button>
                         </div>
                     `;
                 }
             }
         ],
+
+        // Compara día para resaltar trabajo
+        "rowCallback": function(row, data) {
+            if (data.fecha_final === hoy) {
+                $(row).addClass("resaltar-hoy");
+            }
+        },
+
         "language": {
             "url": "//cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json"
         },
@@ -102,6 +108,8 @@ $(document).ready(function() {
         "serverSide": false,
         "pageLength": 25,
         "order": [[0, "desc"]],
+        "responsive": true,
+        "autoWidth": false,
         "dom": 'Bfrtip', // B = Buttons, f = filter, r = processing, t = table, i = info, p = pagination
         "buttons": [
             {
@@ -121,16 +129,9 @@ $(document).ready(function() {
         ]
     });
 
-    // Mantiene actualizados los registros en segundo plano
-
-    setInterval(function () {
-        $('#tablaTrabajo').DataTable().ajax.reload(null, false); 
-    }, 10 * 60 * 1000);
-
     // Obtener lista de usuarios
-
     $.ajax({
-        url: 'app/modules/usuarios/seleccionar.php',
+        url: 'app/api/usuarios/seleccionar.php',
         type: 'GET',
         dataType: 'json',
         success: function (response) {
@@ -150,14 +151,35 @@ $(document).ready(function() {
         }
     });
 
-    // Obtener lista de clientes
+    // Obtener lista de usuarios en filtro
+    $.ajax({
+        url: 'app/api/usuarios/seleccionar.php',
+        type: 'GET',
+        dataType: 'json',
+        success: function (response) {
+            if (response.success) {
+                var select = $('#encargado_filter');
+                select.empty();
+                select.append('<option value="">Todos los encargados</option>');
+                response.data.forEach(function (usuario) {
+                    select.append('<option value="' + usuario.id + '">' + usuario.nombre + '</option>');
+                });
+            } else {
+                console.error("Error cargando usuarios: " + response.message);
+            }
+        },
+        error: function () {
+            console.error("Error AJAX al cargar usuarios");
+        }
+    });
 
+    // Obtener lista de clientes
     $('#id_cliente').select2({
         placeholder: "Seleccionar",
         allowClear: true
     });
     $.ajax({
-        url: 'app/modules/clientes/seleccionar.php',
+        url: 'app/api/clientes/seleccionar.php',
         type: 'GET',
         dataType: 'json',
         success: function (response) {
@@ -179,27 +201,27 @@ $(document).ready(function() {
     });
 
     // Focus el input de búsqueda
-    
     tabla.on('init.dt', function () {
         $('#tablaTrabajo_filter input').focus();
     });
     
     // Limpiar filtros
-
     $('#btn_limpiar').click(function() {
         $('#daterange').val('');
         $('#estado_filter').val('');
+        $('#encargado_filter').val('');
         tabla.ajax.reload();
     });
     
     // Filtrar automáticamente cuando cambien los selects
-
     $('#estado_filter').change(function() {
+        tabla.ajax.reload();
+    });
+    $('#encargado_filter').change(function() {
         tabla.ajax.reload();
     });
 
     // Inicializar CKEditor
-
     CKEDITOR.replace('trabajo', {
         toolbar: [
             { name: 'clipboard', items: ['Undo', 'Redo', '-', 'Cut', 'Copy', 'Paste'] },
@@ -212,18 +234,15 @@ $(document).ready(function() {
     });
     
     // Crear y editar registro
-
     $('#formTrabajo').on('submit', function (e) {
         e.preventDefault();
 
         // Actualizar el contenido de CKEditor
-
         for (instance in CKEDITOR.instances) {
             CKEDITOR.instances[instance].updateElement();
         }
-
         var formData = $(this).serialize();
-        var url = $('#trabajoId').val() ? 'app/modules/trabajos/editar.php' : 'app/modules/trabajos/crear.php';
+        var url = $('#trabajoId').val() ? 'app/api/trabajos/editar.php' : 'app/api/trabajos/crear.php';
         $.ajax({
             url: url,
             type: 'POST',
@@ -233,11 +252,12 @@ $(document).ready(function() {
                 if (response.success) {
                     $('#modalTrabajo').modal('hide');
                     tabla.ajax.reload(null, false);
+                    cargarContadores();
                     Swal.fire({
                         icon: 'success',
                         title: '¡Éxito!',
                         text: response.message,
-                        timer: 2000,
+                        timer: 1500,
                         showConfirmButton: false
                     });
                     $('#formTrabajo')[0].reset();
@@ -262,7 +282,6 @@ $(document).ready(function() {
     });
 
     // Limpiar formulario al cerrar modal
-
     $('#modalTrabajo').on('hidden.bs.modal', function () {
         $('#formTrabajo')[0].reset();
         $('#trabajoId').val('');
@@ -272,10 +291,9 @@ $(document).ready(function() {
 });
 
 // Obtener datos para editar
-
 function editarTrabajo(id) {
     $.ajax({
-        url: 'app/modules/trabajos/obtener.php',
+        url: 'app/api/trabajos/obtener.php',
         type: 'POST',
         data: { id: id },
         dataType: 'json',
@@ -285,7 +303,7 @@ function editarTrabajo(id) {
                 $('#trabajoId').val(trabajo.id);
                 CKEDITOR.instances['trabajo'].setData(trabajo.trabajo);
                 $('#id_cliente').val(trabajo.id_cliente);
-                $('#id_vendedor').val(trabajo.id_vendedor);
+                $('#id_vendedor').val(trabajo.nombre_vendedor);
                 $('#id_encargado').val(trabajo.id_encargado);
                 $('#categoria').val(trabajo.categoria);
                 $('#fecha_inicial').val(trabajo.fecha_inicial);
@@ -313,7 +331,6 @@ function editarTrabajo(id) {
 }
 
 // Eliminar registro
-
 function eliminarTrabajo(id) {
     Swal.fire({
         title: '¿Estás seguro?',
@@ -327,18 +344,19 @@ function eliminarTrabajo(id) {
     }).then((result) => {
         if (result.isConfirmed) {
             $.ajax({
-                url: 'app/modules/trabajos/eliminar.php',
+                url: 'app/api/trabajos/eliminar.php',
                 type: 'POST',
                 data: {id: id},
                 dataType: 'json',
                 success: function(response) {
                     if(response.success) {
                         $('#tablaTrabajo').DataTable().ajax.reload(null, false);
+                        cargarContadores();
                         Swal.fire({
                             icon: 'success',
                             title: 'Eliminado',
                             text: response.message,
-                            timer: 2000,
+                            timer: 1500,
                             showConfirmButton: false
                         });
                     } else {
@@ -353,45 +371,48 @@ function eliminarTrabajo(id) {
         }
     });
 
-    /*=============================================
-    PAGOS
-    =============================================*/
+}
 
-    function pagos() {
-        var x = document.getElementById("pagos");
-        if (x.style.display === "none") {
-        x.style.display = "block";
-        } else {
-        x.style.display = "none";
-        }
-    }
-    document.getElementById("precio").onchange = function() {calcularRestante();};
-        function calcularRestante() {
-        var x = document.getElementById("restante");
-        var y = document.getElementById("precio");
-        var z = document.getElementById("anticipo"); 
-        x.value = y.value-z.value;
-    }
-    document.getElementById("anticipo").onchange = function() {calcularRestante2();};
-    function calcularRestante2() {
-        var x = document.getElementById("restante");
-        var y = document.getElementById("precio");
-        var z = document.getElementById("anticipo"); 
-        x.value = y.value-z.value;
-    }
-    document.getElementById("anticipo2").onchange = function() {calcularRestante3();};
-    function calcularRestante3() {
-        var x = document.getElementById("restante2");
-        var y = document.getElementById("restante");
-        var z = document.getElementById("anticipo2");
-        x.value = y.value-z.value;
-    }
-    document.getElementById("anticipo3").onchange = function() {calcularRestante4();};
-    function calcularRestante4() {
-        var x = document.getElementById("restante3");
-        var y = document.getElementById("restante2");
-        var z = document.getElementById("anticipo3");
-        x.value = y.value-z.value;
-    }
+// Imprimir trabajo
+function imprimirTrabajo(idTrabajo) {
+    const url = "app/api/trabajos/imprimir.php?id=" + idTrabajo;
+    window.open(url, "_blank");
+}
 
+// Calcula pagos en modal
+function pagos() {
+    var x = document.getElementById("pagos");
+    if (x.style.display === "none") {
+    x.style.display = "block";
+    } else {
+    x.style.display = "none";
+    }
+}
+document.getElementById("precio").onchange = function() {calcularRestante();};
+    function calcularRestante() {
+    var x = document.getElementById("restante");
+    var y = document.getElementById("precio");
+    var z = document.getElementById("anticipo"); 
+    x.value = y.value-z.value;
+}
+document.getElementById("anticipo").onchange = function() {calcularRestante2();};
+function calcularRestante2() {
+    var x = document.getElementById("restante");
+    var y = document.getElementById("precio");
+    var z = document.getElementById("anticipo"); 
+    x.value = y.value-z.value;
+}
+document.getElementById("anticipo2").onchange = function() {calcularRestante3();};
+function calcularRestante3() {
+    var x = document.getElementById("restante2");
+    var y = document.getElementById("restante");
+    var z = document.getElementById("anticipo2");
+    x.value = y.value-z.value;
+}
+document.getElementById("anticipo3").onchange = function() {calcularRestante4();};
+function calcularRestante4() {
+    var x = document.getElementById("restante3");
+    var y = document.getElementById("restante2");
+    var z = document.getElementById("anticipo3");
+    x.value = y.value-z.value;
 }

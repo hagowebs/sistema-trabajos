@@ -1,10 +1,9 @@
 $(document).ready(function() {
 
     // Inicializar DataTable
-
     var tabla = $('#tablaUsuarios').DataTable({
         "ajax": {
-            "url": "app/modules/usuarios/listar.php",
+            "url": "app/api/usuarios/listar.php",
             "type": "POST"
         },
         "columns": [
@@ -18,12 +17,14 @@ $(document).ready(function() {
                 "data": null,
                 "render": function(data, type, row) {
                     return `
-                        <button class="btn btn-sm btn-info" onclick="editarUsuario(${row.id})">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="btn btn-sm btn-danger" onclick="eliminarUsuario(${row.id})">
-                            <i class="fas fa-trash"></i>
-                        </button>
+                        <div class="btn-group" role="group">
+                            <button class="btn btn-sm btn-info" onclick="editarUsuario(${row.id})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="eliminarUsuario(${row.id})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
                     `;
                 }
             }
@@ -35,6 +36,8 @@ $(document).ready(function() {
         "serverSide": false,
         "pageLength": 25,
         "order": [[0, "desc"]],
+        "responsive": true,
+        "autoWidth": false,
         "dom": 'Bfrtip', // B = Buttons, f = filter, r = processing, t = table, i = info, p = pagination
         "buttons": [
             {
@@ -54,12 +57,16 @@ $(document).ready(function() {
         ]
     });
 
-    // Crear y editar registro
+    // Focus el input de búsqueda
+    tabla.on('init.dt', function () {
+        $('#tablaUsuarios_filter input').focus();
+    });
 
+    // Crear y editar registro
     $('#formUsuario').on('submit', function(e) {
         e.preventDefault();
         var formData = $(this).serialize();
-        var url = $('#usuarioId').val() ? 'app/modules/usuarios/editar.php' : 'app/modules/usuarios/crear.php';
+        var url = $('#usuarioId').val() ? 'app/api/usuarios/editar.php' : 'app/api/usuarios/crear.php';
         $.ajax({
             url: url,
             type: 'POST',
@@ -73,7 +80,7 @@ $(document).ready(function() {
                         icon: 'success',
                         title: '¡Éxito!',
                         text: response.message,
-                        timer: 2000,
+                        timer: 1500,
                         showConfirmButton: false
                     });
                     $('#formUsuario')[0].reset();
@@ -98,7 +105,6 @@ $(document).ready(function() {
     });
 
     // Limpiar formulario al cerrar modal
-
     $('#modalUsuario').on('hidden.bs.modal', function() {
         $('#formUsuario')[0].reset();
         $('#usuarioId').val('');
@@ -108,10 +114,9 @@ $(document).ready(function() {
 });
 
 // Obtener datos para editar
-
 function editarUsuario(id) {
     $.ajax({
-        url: 'app/modules/usuarios/obtener.php',
+        url: 'app/api/usuarios/obtener.php',
         type: 'POST',
         data: {id: id},
         dataType: 'json',
@@ -121,7 +126,6 @@ function editarUsuario(id) {
                 $('#usuarioId').val(usuario.id);
                 $('#nombre').val(usuario.nombre);
                 $('#usuario').val(usuario.usuario);
-                $('#clave').val(usuario.clave);
                 $('#perfil').val(usuario.perfil);
                 $('#tituloModal').text('Editar Usuario');
                 $('#modalUsuario').modal('show');
@@ -131,7 +135,6 @@ function editarUsuario(id) {
 }
 
 // Función para eliminar
-
 function eliminarUsuario(id) {
     Swal.fire({
         title: '¿Estás seguro?',
@@ -145,7 +148,7 @@ function eliminarUsuario(id) {
     }).then((result) => {
         if (result.isConfirmed) {
             $.ajax({
-                url: 'app/modules/usuarios/eliminar.php',
+                url: 'app/api/usuarios/eliminar.php',
                 type: 'POST',
                 data: {id: id},
                 dataType: 'json',
@@ -156,7 +159,7 @@ function eliminarUsuario(id) {
                             icon: 'success',
                             title: 'Eliminado',
                             text: response.message,
-                            timer: 2000,
+                            timer: 1500,
                             showConfirmButton: false
                         });
                     } else {
@@ -171,3 +174,8 @@ function eliminarUsuario(id) {
         }
     });
 }
+
+// Mantiene actualizados los registros en segundo plano
+setInterval(function () {
+    $('#tablaUsuarios').DataTable().ajax.reload(null, false); 
+}, 10 * 60 * 1000);

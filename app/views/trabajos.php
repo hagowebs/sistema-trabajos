@@ -1,3 +1,5 @@
+    <!-- Main -->
+    
     <main class="content-wrapper">
         <section class="content-header">
             <div class="container-fluid">
@@ -29,9 +31,14 @@
                                                 <input type="text" class="form-control" id="daterange" name="daterange" readonly placeholder="Sel. fechas">
                                             </div>
                                         </div>
-                                        <div class="col-lg-2 col-md-8">
+                                        <?php if ($_SESSION['perfil'] == 'Administrador' || $_SESSION['perfil'] == 'Especial') { ?><div class="col-lg-2 col-md-8">
+                                            <select class="form-control" id="encargado_filter">
+                                                <option value="">Todos los encargados</option>
+                                            </select>
+                                        </div>
+                                        <?php } ?><div class="col-lg-2 col-md-8">
                                             <select class="form-control" id="estado_filter">
-                                                <option value="">Todos</option>
+                                                <option value="">Todos los estados</option>
                                                 <option value="Pendiente">Pendiente</option>
                                                 <option value="Cotización">Cotización</option>
                                                 <option value="Diseño">Diseño</option>
@@ -68,7 +75,9 @@
                                     <thead>
                                         <tr>
                                             <th>ID</th>
+                                            <th>Encargado</th>
                                             <th>Cliente</th>
+                                            <th>Teléfono</th>
                                             <th>Trabajo</th>
                                             <th>Pedido</th>
                                             <th>Entrega</th>
@@ -104,14 +113,14 @@
                     <div class="modal-body">
                         <div class="row">
                             <input type="hidden" id="trabajoId" name="id">
-                            <div class="col-md-6">
+                            <div class="col-md-3">
                                 <div class="form-group">
-                                    <label for="id_vendedor">Vendedor</label>
-                                    <input type="text" class="form-control" value="<?php echo $_SESSION["nombre"]; ?>" readonly>
+                                    <label for="vendedor">Vendedor</label>
+                                    <input type="text" class="form-control" id="id_vendedor" readonly>
                                     <input type="hidden" name="id_vendedor" value="<?php echo $_SESSION["id"]; ?>">
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="id_encargado">Encargado *</label>
                                     <select class="form-control" id="id_encargado" name="id_encargado" required>
@@ -119,7 +128,7 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="id_cliente">Cliente *</label>
                                     <select class="form-control" id="id_cliente" name="id_cliente" style="width: 100%;">
@@ -127,7 +136,7 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="categoria">Categoría *</label>
                                     <select class="form-control" id="categoria" name="categoria" required>
@@ -157,47 +166,46 @@
                                     <textarea class="form-control" id="trabajo" name="trabajo" required></textarea>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="fecha_inicial">Fecha Pedido *</label>
                                     <input type="date" class="form-control" id="fecha_inicial" name="fecha_inicial" value="<?php echo date('Y-m-d'); ?>" required>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="fecha_final">Fecha Entrega *</label>
                                     <input type="date" class="form-control" id="fecha_final" name="fecha_final" required>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="precio">Total *</label>
-                                    <input type="number" min="0" step=".01" class="form-control" id="precio" name="precio" required>
+                                    <input type="number" min="0" step=".01" class="form-control" id="precio" name="precio" value="0" required>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="anticipo">Anticipo *</label>
-                                    <input type="number" step=".01" class="form-control" id="anticipo" name="anticipo" required>
+                                    <input type="number" step=".01" class="form-control" id="anticipo" name="anticipo" value="0" required>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="restante">Restante *</label>
-                                    <input type="number" step=".01" class="form-control" id="restante" name="restante" required>
+                                    <input type="number" step=".01" class="form-control" id="restante" name="restante" value="0" readonly>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="envio">Envio *</label>
                                     <select class="form-control" id="envio" name="envio" required>
-                                        <option value="">Seleccionar</option>
                                         <option value="En Tienda">En Tienda</option>
                                         <option value="A Domicilio">A Domicilio</option>
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="metodo_pago">Metodo de pago *</label>
                                     <select class="form-control" id="metodo_pago" name="metodo_pago" required>
@@ -209,7 +217,7 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="estado">Estado *</label>
                                     <select class="form-control" id="estado" name="estado" required>
@@ -223,87 +231,74 @@
                                     </select>
                                 </div>
                             </div>
-
-
-
-
-                            <a class="btn btn-default" onclick="pagos()" style="margin-bottom: 15px;">+ Pagos</a>
-                            <div id="pagos">
-
-                            <!-- ENTRADAS PARA EL PAGO 2 -->
-
-                            <div class="form-group">
-                                <div class="row" style="margin-right: 17px;">
-                                <div class="col-md-3">
-                                    <div class="input-group">
-                                    <input type="number" min="0" step=".01" class="form-control" name="anticipo2" id="anticipo2" placeholder="Abono">
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="input-group">
-                                    <input type="number" min="0" step=".01" class="form-control" name="restante2" id="restante2" readonly>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="input-group">
-                                        <select class="form-control" name="metodo_pago2" id="metodo_pago2">
-                                            <option value="">Seleccionar</option>
-                                            <option value="Efectivo">Efectivo</option>
-                                            <option value="Tarjeta">Tarjeta</option>
-                                            <option value="Transferencia">Transferencia</option>
-                                            <option value="Crédito">Crédito</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="input-group">
-                                    <input type="date" class="form-control" name="fecha2" id="fecha2">
-                                    </div>
-                                </div>
+                        </div>
+                        <a id="btn_pagos" class="btn btn-default" onclick="pagos()" style="margin-bottom: 15px;">+ Pagos</a>
+                        <div id="pagos" style="display: none;">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="anticipo2">Anticipo 2</label>
+                                    <input type="number" step=".01" class="form-control" id="anticipo2" name="anticipo2">
                                 </div>
                             </div>
-
-                            <!-- ENTRADAS PARA EL PAGO 3 -->
-
-                            <div class="form-group">
-                                <div class="row" style="margin-right: 17px;">
-                                <div class="col-md-3">
-                                    <div class="input-group">
-                                    <input type="number" min="0" step=".01" class="form-control" name="anticipo3" id="anticipo3" placeholder="Abono">
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="input-group">
-                                    <input type="number" min="0" step=".01" class="form-control" name="restante3" id="restante3" readonly>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="input-group">
-                                        <select class="form-control" name="metodo_pago3" id="metodo_pago3">
-                                            <option value="">Seleccionar</option>
-                                            <option value="Efectivo">Efectivo</option>
-                                            <option value="Tarjeta">Tarjeta</option>
-                                            <option value="Transferencia">Transferencia</option>
-                                            <option value="Crédito">Crédito</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="input-group">
-                                    <input type="date" class="form-control" name="fecha3" id="fecha3">
-                                    </div>
-                                </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="restante2">Restante 2</label>
+                                    <input type="number" step=".01" class="form-control" id="restante2" name="restante2" readonly>
                                 </div>
                             </div>
-
-
-
-
-
-
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="metodo_pago2">Metodo de pago 2</label>
+                                    <select class="form-control" id="metodo_pago2" name="metodo_pago2">
+                                        <option value="">Seleccionar</option>
+                                        <option value="Efectivo">Efectivo</option>
+                                        <option value="Tarjeta">Tarjeta</option>
+                                        <option value="Transferencia">Transferencia</option>
+                                        <option value="Crédito">Crédito</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="fecha2">Fecha 2</label>
+                                    <input type="date" class="form-control" id="fecha2" name="fecha2">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="anticipo3">Anticipo 3</label>
+                                    <input type="number" step=".01" class="form-control" id="anticipo3" name="anticipo3">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="restante3">Restante 3</label>
+                                    <input type="number" step=".01" class="form-control" id="restante3" name="restante3" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="metodo_pago3">Metodo de pago 3</label>
+                                    <select class="form-control" id="metodo_pago3" name="metodo_pago3">
+                                        <option value="">Seleccionar</option>
+                                        <option value="Efectivo">Efectivo</option>
+                                        <option value="Tarjeta">Tarjeta</option>
+                                        <option value="Transferencia">Transferencia</option>
+                                        <option value="Crédito">Crédito</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="fecha3">Fecha 3</label>
+                                    <input type="date" class="form-control" id="fecha3" name="fecha3">
+                                </div>
+                            </div>
+                        </div>
                         </div>
                     </div>
-                    <div class="modal-footer">
+                    <div class="modal-footer justify-content-between">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
                         <button type="submit" id="btnEnviar" class="btn btn-primary">Registrar</button>
                     </div>

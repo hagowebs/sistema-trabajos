@@ -1,3 +1,5 @@
+    <!-- Main -->
+    
     <main class="content-wrapper">
         <section class="content-header">
             <div class="container-fluid">
@@ -32,9 +34,9 @@
                                         <div class="col-lg-2 col-md-8">
                                             <select class="form-control" id="estado_filter">
                                                 <option value="">Todos</option>
-                                                <option value="pendiente">Pendiente</option>
-                                                <option value="pedido">Pedido</option>
-                                                <option value="archivado">Entregado</option>
+                                                <option value="Pendiente">Pendiente</option>
+                                                <option value="Pedido">Pedido</option>
+                                                <option value="Archivado">Archivado</option>
                                             </select>
                                         </div>
                                         <div class="col-lg-2 col-md-4">
@@ -131,13 +133,13 @@
                                         <option value="">Selecionar</option>
                                         <option value="Pendiente">Pendiente</option>
                                         <option value="Pedido">Pedido</option>
-                                        <option value="archivado">Entregado</option>
+                                        <option value="Archivado">Archivado</option>
                                     </select>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="modal-footer">
+                    <div class="modal-footer justify-content-between">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
                         <button type="submit" id="btnEnviar" class="btn btn-primary">Registrar</button>
                     </div>

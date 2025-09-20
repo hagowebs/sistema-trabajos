@@ -1,11 +1,6 @@
 $(document).ready(function() {
-
-    // Configurar moment.js en español
-
-    moment.locale('es');
     
     // Inicializar Date Range Picker
-
     $('#daterange').daterangepicker({
         autoUpdateInput: false,
         locale: {
@@ -31,41 +26,34 @@ $(document).ready(function() {
     });
     
     // Eventos del Date Range Picker
-
     $('#daterange').on('apply.daterangepicker', function(ev, picker) {
         $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
         tabla.ajax.reload();
     });
-    
     $('#daterange').on('cancel.daterangepicker', function(ev, picker) {
         $(this).val('');
         tabla.ajax.reload();
     });
     
     // Inicializar DataTable
-
     var tabla = $('#tablaDtfuv').DataTable({
         "ajax": {
-            "url": "app/modules/dtfuvs/listar.php",
+            "url": "app/api/dtfuvs/listar.php",
             "type": "POST",
             "data": function(d) {
 
                 // Revisar si hay algun filtro activo
-
                 var isAnyFilterActive = $('#daterange').val() !== '' || $('#estado_filter').val() !== '';
                 
                 // Agregar el parámetro que oculta los 'Entregados' por defecto si no hay filtros activos
-
                 d.ocultar_entregados = !isAnyFilterActive;
 
                 // Agregar parámetros adicionales de filtro
-
                 d.fecha_inicio = '';
                 d.fecha_fin = '';
                 d.estado = $('#estado_filter').val();
                 
                 // Procesar el rango de fechas
-
                 if ($('#daterange').val() !== '') {
                     var fechas = $('#daterange').val().split(' - ');
                     if (fechas.length === 2) {
@@ -114,6 +102,8 @@ $(document).ready(function() {
         "serverSide": false,
         "pageLength": 25,
         "order": [[0, "desc"]],
+        "responsive": true,
+        "autoWidth": false,
         "dom": 'Bfrtip', // B = Buttons, f = filter, r = processing, t = table, i = info, p = pagination
         "buttons": [
             {
@@ -134,13 +124,11 @@ $(document).ready(function() {
     });
 
     // Focus el input de búsqueda
-    
     tabla.on('init.dt', function () {
         $('#tablaDtfuv_filter input').focus();
     });
     
     // Limpiar filtros
-
     $('#btn_limpiar').click(function() {
         $('#daterange').val('');
         $('#estado_filter').val('');
@@ -148,17 +136,15 @@ $(document).ready(function() {
     });
     
     // Filtrar automáticamente cuando cambien los selects
-
     $('#estado_filter').change(function() {
         tabla.ajax.reload();
     });
     
     // Crear y editar registro
-
     $('#formDtfuv').on('submit', function(e) {
         e.preventDefault();
         var formData = $(this).serialize();
-        var url = $('#dtfuvId').val() ? 'app/modules/dtfuvs/editar.php' : 'app/modules/dtfuvs/crear.php';
+        var url = $('#dtfuvId').val() ? 'app/api/dtfuvs/editar.php' : 'app/api/dtfuvs/crear.php';
         $.ajax({
             url: url,
             type: 'POST',
@@ -172,7 +158,7 @@ $(document).ready(function() {
                         icon: 'success',
                         title: '¡Éxito!',
                         text: response.message,
-                        timer: 2000,
+                        timer: 1500,
                         showConfirmButton: false
                     });
                     $('#formDtfuv')[0].reset();
@@ -197,7 +183,6 @@ $(document).ready(function() {
     });
 
     // Limpiar formulario al cerrar modal
-
     $('#modalDtfuv').on('hidden.bs.modal', function() {
         $('#formDtfuv')[0].reset();
         $('#dtfuvId').val('');
@@ -206,10 +191,9 @@ $(document).ready(function() {
 });
 
 // Obtener datos para editar
-
 function editarDtfuv(id) {
     $.ajax({
-        url: 'app/modules/dtfuvs/obtener.php',
+        url: 'app/api/dtfuvs/obtener.php',
         type: 'POST',
         data: {id: id},
         dataType: 'json',
@@ -230,7 +214,6 @@ function editarDtfuv(id) {
 }
 
 // Eliminar registro
-
 function eliminarDtfuv(id) {
     Swal.fire({
         title: '¿Estás seguro?',
@@ -244,7 +227,7 @@ function eliminarDtfuv(id) {
     }).then((result) => {
         if (result.isConfirmed) {
             $.ajax({
-                url: 'app/modules/dtfuvs/eliminar.php',
+                url: 'app/api/dtfuvs/eliminar.php',
                 type: 'POST',
                 data: {id: id},
                 dataType: 'json',
@@ -255,7 +238,7 @@ function eliminarDtfuv(id) {
                             icon: 'success',
                             title: 'Eliminado',
                             text: response.message,
-                            timer: 2000,
+                            timer: 1500,
                             showConfirmButton: false
                         });
                     } else {
@@ -270,3 +253,8 @@ function eliminarDtfuv(id) {
         }
     });
 }
+
+// Mantiene actualizados los registros en segundo plano
+setInterval(function () {
+    $('#tablaDtfuv').DataTable().ajax.reload(null, false); 
+}, 10 * 60 * 1000);

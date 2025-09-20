@@ -1,3 +1,5 @@
+    <!-- Main -->
+    
     <main class="content-wrapper">
         <section class="content-header">
             <div class="container-fluid">
@@ -77,8 +79,8 @@
                             <input type="text" class="form-control" id="usuario" name="usuario" required>
                         </div>
                         <div class="form-group">
-                            <label for="clave">Clave *</label>
-                            <input type="password" class="form-control" id="clave" name="clave" required>
+                            <label for="clave">Clave</label>
+                            <input type="password" class="form-control" id="clave" name="clave">
                         </div>
                         <div class="form-group">
                             <label for="perfil">Perfil *</label>
@@ -90,7 +92,7 @@
                             </select>
                         </div>
                     </div>
-                    <div class="modal-footer">
+                    <div class="modal-footer justify-content-between">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
                         <button type="submit" id="btnEnviar" class="btn btn-primary">Registrar</button>
                     </div>

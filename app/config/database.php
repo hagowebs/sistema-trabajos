@@ -1,12 +1,11 @@
-<?php // Acceso a base de datos
+<?php // app/database
 
 $host = 'localhost';
 $dbname = 'sistema';
-$username = 'emilio';
-$password = 'cadava';
+$username = 'root';
+$password = '';
 
 // Conexión a la base de datos
-
 try {
     $pdo = new PDO("mysql: host=$host; dbname=$dbname; charset=utf8", $username, $password);
     $pdo -> setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);

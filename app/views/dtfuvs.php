@@ -1,3 +1,5 @@
+    <!-- Main -->
+    
     <main class="content-wrapper">
         <section class="content-header">
             <div class="container-fluid">
@@ -122,7 +124,7 @@
                             </select>
                         </div>
                     </div>
-                    <div class="modal-footer">
+                    <div class="modal-footer justify-content-between">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
                         <button type="submit" id="btnEnviar" class="btn btn-primary">Registrar</button>
                     </div>

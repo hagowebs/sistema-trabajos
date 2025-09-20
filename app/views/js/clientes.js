@@ -1,10 +1,9 @@
 $(document).ready(function() {
 
     // Inicializar DataTable
-
     var tabla = $('#tablaClientes').DataTable({
         "ajax": {
-            "url": "app/modules/clientes/listar.php",
+            "url": "app/api/clientes/listar.php",
             "type": "POST"
         },
         "columns": [
@@ -18,12 +17,14 @@ $(document).ready(function() {
                 "data": null,
                 "render": function(data, type, row) {
                     return `
-                        <button class="btn btn-sm btn-info" onclick="editarCliente(${row.id})">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="btn btn-sm btn-danger" onclick="eliminarCliente(${row.id})">
-                            <i class="fas fa-trash"></i>
-                        </button>
+                        <div class="btn-group" role="group">
+                            <button class="btn btn-sm btn-info" onclick="editarCliente(${row.id})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="eliminarCliente(${row.id})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
                     `;
                 }
             }
@@ -35,6 +36,8 @@ $(document).ready(function() {
         "serverSide": false,
         "pageLength": 25,
         "order": [[0, "desc"]],
+        "responsive": true,
+        "autoWidth": false,
         "dom": 'Bfrtip', // B = Buttons, f = filter, r = processing, t = table, i = info, p = pagination
         "buttons": [
             {
@@ -54,12 +57,16 @@ $(document).ready(function() {
         ]
     });
 
-    // Crear y editar registro
+    // Focus el input de búsqueda
+    tabla.on('init.dt', function () {
+        $('#tablaClientes_filter input').focus();
+    });
 
+    // Crear y editar registro
     $('#formCliente').on('submit', function(e) {
         e.preventDefault();
         var formData = $(this).serialize();
-        var url = $('#clienteId').val() ? 'app/modules/clientes/editar.php' : 'app/modules/clientes/crear.php';
+        var url = $('#clienteId').val() ? 'app/api/clientes/editar.php' : 'app/api/clientes/crear.php';
         $.ajax({
             url: url,
             type: 'POST',
@@ -73,7 +80,7 @@ $(document).ready(function() {
                         icon: 'success',
                         title: '¡Éxito!',
                         text: response.message,
-                        timer: 2000,
+                        timer: 1500,
                         showConfirmButton: false
                     });
                     $('#formCliente')[0].reset();
@@ -98,7 +105,6 @@ $(document).ready(function() {
     });
 
     // Limpiar formulario al cerrar modal
-
     $('#modalCliente').on('hidden.bs.modal', function() {
         $('#formCliente')[0].reset();
         $('#clienteId').val('');
@@ -108,10 +114,9 @@ $(document).ready(function() {
 });
 
 // Obtener datos para editar
-
 function editarCliente(id) {
     $.ajax({
-        url: 'app/modules/clientes/obtener.php',
+        url: 'app/api/clientes/obtener.php',
         type: 'POST',
         data: {id: id},
         dataType: 'json',
@@ -132,7 +137,6 @@ function editarCliente(id) {
 }
 
 // Función para eliminar
-
 function eliminarCliente(id) {
     Swal.fire({
         title: '¿Estás seguro?',
@@ -146,7 +150,7 @@ function eliminarCliente(id) {
     }).then((result) => {
         if (result.isConfirmed) {
             $.ajax({
-                url: 'app/modules/clientes/eliminar.php',
+                url: 'app/api/clientes/eliminar.php',
                 type: 'POST',
                 data: {id: id},
                 dataType: 'json',
@@ -157,7 +161,7 @@ function eliminarCliente(id) {
                             icon: 'success',
                             title: 'Eliminado',
                             text: response.message,
-                            timer: 2000,
+                            timer: 1500,
                             showConfirmButton: false
                         });
                     } else {
@@ -172,3 +176,8 @@ function eliminarCliente(id) {
         }
     });
 }
+
+// Mantiene actualizados los registros en segundo plano
+setInterval(function () {
+    $('#tablaClientes').DataTable().ajax.reload(null, false); 
+}, 10 * 60 * 1000);

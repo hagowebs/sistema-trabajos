@@ -9,8 +9,8 @@
                 <h2 class="headline text-warning"> 404</h2>
                 <div class="error-content">
                     <h3><i class="fas fa-exclamation-triangle text-warning"></i> Página no encontrada.</h3>
-                    <p>La página que buscas no existe.</p>
-                    <p>Use el menú lateral para navegar por las diferentes secciones.</p>
+                    <p>La página que busca no existe.</p>
+                    <p>Use el menú lateral para navegar por las secciones.</p>
                 </div>
             </div>
         </section>

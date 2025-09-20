@@ -9,7 +9,7 @@
                 <h2 class="headline text-warning"> 403</h2>
                 <div class="error-content">
                     <h3><i class="fas fa-exclamation-triangle text-warning"></i> Acceso Prohibido.</h3>
-                    <p>No tienes permiso para ver esta página.</p>
+                    <p>No tiene permiso para ver esta página.</p>
                     <p>Contacte con el administrador del sistema.</p>
                 </div>
             </div>

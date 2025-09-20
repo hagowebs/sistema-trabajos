@@ -5,37 +5,30 @@
     </footer>
     
 </div>
-<!-- jQuery 3.7.0 -->
-<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-<!-- Bootstrap 4.6.2 -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 <!-- AdminLTE 3.2.0 JS -->
-<script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
-<!-- DataTables 1.13.6 JS -->
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
-<!-- Buttons 2.4.1 JS -->
-<script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
-<!-- JSZip para exportar a Excel -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<!-- Botón Excel -->
-<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
-<!-- Moment.js (requerido para daterangepicker) -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/locale/es.min.js"></script>
-<!-- Date Range Picker -->
-<script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-<!-- Buttons 2.4.1 JS -->
-<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
-<!-- sweetalert2 11.22.5 JS -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="<?php echo info("url"); ?>/public/plugins/jquery/jquery.min.js"></script>
+<script src="<?php echo info("url"); ?>/public/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="<?php echo info("url"); ?>/public/dist/js/adminlte.min.js"></script>
+<!-- DataTables JS -->
+<script src="<?php echo info("url"); ?>/public/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="<?php echo info("url"); ?>/public/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="<?php echo info("url"); ?>/public/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+<script src="<?php echo info("url"); ?>/public/plugins/jszip/jszip.min.js"></script>
+<script src="<?php echo info("url"); ?>/public/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+<script src="<?php echo info("url"); ?>/public/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+<script src="<?php echo info("url"); ?>/public/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+<!-- Date Range Picker JS -->
+<script src="<?php echo info("url"); ?>/public/plugins/moment/moment.min.js"></script>
+<script src="<?php echo info("url"); ?>/public/plugins/moment/locale/es.js"></script>
+<script src="<?php echo info("url"); ?>/public/plugins/daterangepicker/daterangepicker.js"></script>
 <!-- InputMask -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js"></script>
-<!-- Select2 4.1.0 JS -->
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-<!-- CKEditor 4 -->
-<script src="https://trabajos.papeleriapip.com/public/assets/bower_components/ckeditor/ckeditor.js"></script>
-<!-- Custom JS -->
+<script src="<?php echo info("url"); ?>/public/plugins/inputmask/jquery.inputmask.min.js"></script>
+<!-- Select2 JS -->
+<script src="<?php echo info("url"); ?>/public/plugins/select2/js/select2.min.js"></script>
+<!-- sweetalert2 JS -->
+<script src="<?php echo info("url"); ?>/public/plugins/sweetalert2/sweetalert2.min.js"></script>
+<!-- CKEditor 4.22.1 -->
+<script src="<?php echo info("url"); ?>/public/plugins/ckeditor/ckeditor.js"></script>
 <?php get_scripts(); ?>
 </body>
 </html>

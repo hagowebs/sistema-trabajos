@@ -3,7 +3,6 @@
 require_once '../app/config/database.php';
 
 // Verificar inicio de sesión
-
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $usuario  = trim($_POST['usuario']);
     $clave = trim($_POST['clave']);
@@ -17,8 +16,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $encriptado = crypt($clave, '$2a$07$asxx54ahjppf45sd87a5a4dDDGsystemdev$');
             if ($encriptado === $row['clave']) {
 
-                // Obtener variables de usuario
+                // Actualizar último login
+                $update = "UPDATE usuarios SET ultimo_login = NOW() WHERE id = :id";
+                $updateStmt = $pdo->prepare($update);
+                $updateStmt->bindParam(":id", $row['id'], PDO::PARAM_INT);
+                $updateStmt->execute();
 
+                // Obtener variables de usuario
                 $_SESSION['id'] = $row['id'];
                 $_SESSION['usuario'] = $row['usuario'];
                 $_SESSION["nombre"] = $row["nombre"];
@@ -45,16 +49,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?php info('name'); ?></title>
-    <link rel="icon" href="<?php echo info('url'); ?>/public/assets/images/icono-negro.webp">
-    <!-- Font Awesome 6.0.0 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="icon" href="<?php echo info('url'); ?>/public/images/icono-negro.webp">
+    <!-- Font Awesome Free 5.15.4 -->
+    <link rel="stylesheet" href="<?php echo info("url"); ?>/public/plugins/fontawesome-free/css/all.min.css">
     <!-- AdminLTE 3.2.0 CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+    <link rel="stylesheet" href="<?php echo info("url"); ?>/public/dist/css/adminlte.min.css">
 </head>
-<body class="hold-transition login-page" style="background-image: url('<?php echo info('url'); ?>/public/assets/images/back.webp'); background-size: cover; background-position: center;">
+<body class="hold-transition login-page" style="background-image: url('<?php echo info('url'); ?>/public/images/back.webp'); background-size: cover; background-position: center;">
     <div class="login-box">
         <div class="login-logo">
-            <img src="<?php echo info('url'); ?>/public/assets/images/logo-blanco-bloque.webp" class="img-responsive" style="padding:30px 100px 0px 100px">
+            <img src="<?php echo info('url'); ?>/public/images/logo-blanco-bloque.webp" class="img-responsive" style="padding:30px 100px 0px 100px">
         </div>
         <div class="card">
             <div class="card-body login-card-body">
@@ -85,11 +89,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>    
         </div>
     </div>
-    <!-- jQuery 3.7.0 -->
-    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-    <!-- Bootstrap 4.6.2 -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
     <!-- AdminLTE 3.2.0 JS -->
-    <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+    <script src="<?php echo info("url"); ?>/public/plugins/jquery/jquery.min.js"></script>
+    <script src="<?php echo info("url"); ?>/public/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="<?php echo info("url"); ?>/public/dist/js/adminlte.min.js"></script>
 </body>
 </html>
